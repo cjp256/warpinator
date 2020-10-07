@@ -1,0 +1,66 @@
+name: warpinator
+base: core18
+version: '1.0.8'
+summary: Share files across the LAN
+description: |
+  Share files across the LAN.
+
+grade: devel
+confinement: devmode
+license: GPL-3.0+
+
+package-repositories:
+  - type: apt
+    ppa: clementlefebvre/grpc
+
+parts:
+  pymodules:
+    source: .
+    plugin: python
+    python-version: python3
+    build-packages:
+    - python3-grpcio
+    - python3-grpc-tools
+    - python3-protobuf
+    stage-packages:
+    - python3-grpc-tools
+    - python3-grpcio
+    - python3-protobuf
+    #- python3-gi
+    - python3-setproctitle
+    - python3-xapp
+    - python3-zeroconf
+    - python3-cryptography
+    - python3-nacl
+    - python3-netifaces
+    - python3-packaging
+
+  warpinator:
+    source: .
+    plugin: meson
+    meson-parameters: [ --prefix=/usr ]
+    build-packages:
+    - software-properties-common
+    - apt-utils
+    - appstream
+    - gcc
+    - gettext
+    - gnome-pkg-tools
+    - meson
+    - policykit-1
+    - gobject-introspection
+    #stage-packages:
+    #- gir1.2-glib-2.0
+    #- gir1.2-gtk-3.0
+    #- gir1.2-xapp-1.0
+    #- gir1.2-gobject-2.0
+    #- gir1.2-cairo-1.0
+    #- gettext
+    after: [pymodules]
+
+
+apps:
+  warpinator:
+    command: usr/bin/python3 $SNAP/usr/libexec/warpinator/warpinator.py
+    extensions: [gnome-3-34]
+    plugs: ['home','removable-media','network','network-bind']
